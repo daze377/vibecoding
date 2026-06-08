@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Office temp / lock files
+~$*
+
+# Local-only course materials (raw working files & student PII — never publish)
+raw/
+students/
