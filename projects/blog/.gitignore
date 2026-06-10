@@ -1,0 +1,10 @@
+# Virtual environment & caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+
+# Local data — never commit the database
+instance/
+*.sqlite

@@ -1,0 +1,13 @@
+{% if posts %}
+  <ul class="post-list">
+    {% for post in posts %}
+      <li class="post-card">
+        <h2><a href="{{ url_for('posts.detail', post_id=post.id) }}">{{ post.title }}</a></h2>
+        <p class="post-meta">by {{ post.author }} · {{ post.created_at | day }}</p>
+        <p class="post-preview">{{ post.body | truncate(150) }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="empty">No posts yet.</p>
+{% endif %}
