@@ -11,6 +11,18 @@
   --success: #15803d;
 }
 
+[data-theme="dark"] {
+  --bg: #111827;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --card: #1f2937;
+  --border: #374151;
+  --accent: #60a5fa;
+  --accent-text: #0b1220;
+  --danger: #f87171;
+  --success: #4ade80;
+}
+
 * { box-sizing: border-box; }
 
 body {
