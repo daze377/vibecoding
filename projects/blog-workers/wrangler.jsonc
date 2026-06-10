@@ -1,0 +1,19 @@
+{
+  // Cloudflare Workers config — free plan friendly (Workers + D1 + static assets).
+  "name": "blog",
+  "main": "src/index.js",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "blog-db",
+      "database_id": "930519bb-f762-49a2-b8b4-b38b8b9d1abe"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
