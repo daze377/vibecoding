@@ -58,3 +58,43 @@ def list_posts():
         " ORDER BY p.created_at DESC, p.id DESC"
     ).fetchall()
     return [dict(row) for row in rows]
+
+
+def get_post(post_id):
+    """Return one post (with author username) as a dict, or None."""
+    row = get_db().execute(
+        f"SELECT {POST_COLUMNS}"
+        "  FROM posts AS p JOIN users AS u ON u.id = p.author_id"
+        " WHERE p.id = ?",
+        (post_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def create_post(author_id, title, body):
+    """Insert a new post and return its id."""
+    db = get_db()
+    cursor = db.execute(
+        "INSERT INTO posts (author_id, title, body) VALUES (?, ?, ?)",
+        (author_id, title, body),
+    )
+    db.commit()
+    return cursor.lastrowid
+
+
+def update_post(post_id, title, body):
+    """Replace a post's title and body, stamping updated_at."""
+    db = get_db()
+    db.execute(
+        "UPDATE posts SET title = ?, body = ?, updated_at = CURRENT_TIMESTAMP"
+        " WHERE id = ?",
+        (title, body, post_id),
+    )
+    db.commit()
+
+
+def delete_post(post_id):
+    """Delete a post (its comments and reactions cascade away too)."""
+    db = get_db()
+    db.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+    db.commit()

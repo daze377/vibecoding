@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+  <article class="post-full">
+    <h1>{{ post.title }}</h1>
+    <p class="post-meta">
+      by {{ post.author }} · {{ post.created_at | day }}
+      {%- if post.updated_at %} · edited {{ post.updated_at | day }}{% endif %}
+    </p>
+    <div class="post-body">{{ post.body }}</div>
+
+    {% if g.user and g.user.id == post.author_id %}
+      <div class="post-actions">
+        <a class="button secondary" href="{{ url_for('posts.edit', post_id=post.id) }}">Edit</a>
+        <form method="post" action="{{ url_for('posts.delete', post_id=post.id) }}"
+              onsubmit="return confirm('Delete this post?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="danger">Delete</button>
+        </form>
+      </div>
+    {% endif %}
+  </article>
+{% endblock %}
