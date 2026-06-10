@@ -1,5 +1,6 @@
 """Sign up, log in, log out, and session helpers (task-11.md section 7)."""
 import functools
+import sqlite3
 
 from flask import (
     Blueprint, flash, g, jsonify, redirect, render_template, request,
@@ -54,7 +55,12 @@ def signup():
             flash(message, "error")
         return render_template("signup.html"), 400
 
-    models.create_user(username, email, generate_password_hash(password))
+    try:
+        models.create_user(username, email, generate_password_hash(password))
+    except sqlite3.IntegrityError:
+        # Two signups raced past the checks above — the UNIQUE constraint wins.
+        flash("That username or email is already taken.", "error")
+        return render_template("signup.html"), 400
     flash("Account created — please log in.", "success")
     return redirect(url_for("auth.login"))
 
@@ -88,8 +94,15 @@ def logout():
 
 
 def _safe_next_url():
-    """Only follow same-site relative ?next= targets (no open redirects)."""
+    """Only follow same-site relative ?next= targets (no open redirects).
+
+    Backslashes are rejected too: browsers treat ``/\\evil.com`` like
+    ``//evil.com``, which would leave the site.
+    """
     next_url = request.args.get("next", "")
-    if next_url.startswith("/") and not next_url.startswith("//"):
-        return next_url
-    return url_for("posts.index")
+    is_local_path = (
+        next_url.startswith("/")
+        and not next_url.startswith("//")
+        and "\\" not in next_url
+    )
+    return next_url if is_local_path else url_for("posts.index")

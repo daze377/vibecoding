@@ -31,6 +31,14 @@ def test_post_without_token_is_rejected(csrf_client):
     assert b"CSRF" in response.data
 
 
+def test_api_without_token_gets_json_error(csrf_client):
+    response = csrf_client.post("/api/post/1/react", json={"kind": "like"})
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data["ok"] is False
+    assert "CSRF" in data["error"]
+
+
 def test_post_with_token_is_accepted(csrf_client):
     page = csrf_client.get("/signup")
     token = _extract_token(page.get_data(as_text=True))

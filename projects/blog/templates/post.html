@@ -24,7 +24,7 @@
       <div class="post-actions">
         <a class="button secondary" href="{{ url_for('posts.edit', post_id=post.id) }}">Edit</a>
         <form method="post" action="{{ url_for('posts.delete', post_id=post.id) }}"
-              onsubmit="return confirm('Delete this post?');">
+              data-confirm="Delete this post?">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="danger">Delete</button>
         </form>
@@ -44,6 +44,7 @@
     {% endfor %}
 
     {% if g.user %}
+      <noscript><p class="empty">Adding comments and reactions needs JavaScript enabled.</p></noscript>
       <form id="comment-form" class="form"
             data-url="{{ url_for('comments.add', post_id=post.id) }}">
         <label for="comment-body">Add a comment</label>

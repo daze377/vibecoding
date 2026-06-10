@@ -44,6 +44,22 @@ def test_empty_comment_is_rejected(client, auth):
     assert b"Comments (0)" in client.get("/post/1").data  # nothing was saved
 
 
+def test_non_text_comment_is_rejected(client, auth):
+    auth.signup()
+    auth.login()
+    make_post(client)
+    response = client.post("/api/post/1/comment", json={"body": 12345})
+    assert response.status_code == 400
+    assert "text" in response.get_json()["error"]
+
+
+def test_too_long_comment_is_rejected(client, auth):
+    auth.signup()
+    auth.login()
+    make_post(client)
+    assert comment(client, body="x" * 2001).status_code == 400
+
+
 def test_comment_on_missing_post_is_404(client, auth):
     auth.signup()
     auth.login()

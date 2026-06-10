@@ -40,6 +40,13 @@ def test_create_post_rejects_empty_title(client, auth):
     assert make_post(client, body="   ").status_code == 400
 
 
+def test_create_post_rejects_over_length_input(client, auth):
+    auth.signup()
+    auth.login()
+    assert make_post(client, title="x" * 201).status_code == 400
+    assert make_post(client, body="x" * 20_001).status_code == 400
+
+
 def test_home_lists_newest_first(client, auth):
     auth.signup()
     auth.login()

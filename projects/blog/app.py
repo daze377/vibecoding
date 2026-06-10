@@ -19,6 +19,10 @@ def create_app(test_config=None):
         # Set SECRET_KEY in the environment for any public deployment.
         SECRET_KEY=os.environ.get("SECRET_KEY", "dev"),
         DATABASE=os.path.join(app.instance_path, "blog.sqlite"),
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+        # Set COOKIE_SECURE=1 when serving over HTTPS (e.g. the Cloudflare tunnel).
+        SESSION_COOKIE_SECURE=os.environ.get("COOKIE_SECURE") == "1",
     )
     if test_config is not None:
         app.config.from_mapping(test_config)
@@ -40,5 +44,13 @@ def create_app(test_config=None):
     def day_filter(timestamp):
         """Show only the date part of a 'YYYY-MM-DD HH:MM:SS' timestamp."""
         return (timestamp or "")[:10]
+
+    @app.after_request
+    def set_security_headers(response):
+        """Baseline browser protections for every response."""
+        response.headers.setdefault("Content-Security-Policy", "default-src 'self'")
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        return response
 
     return app

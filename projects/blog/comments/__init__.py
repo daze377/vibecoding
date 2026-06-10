@@ -17,7 +17,10 @@ def add(post_id):
         return jsonify({"ok": False, "error": "Post not found."}), 404
 
     payload = request.get_json(silent=True) or {}
-    body = str(payload.get("body", "")).strip()
+    raw_body = payload.get("body", "")
+    if not isinstance(raw_body, str):
+        return jsonify({"ok": False, "error": "Comment must be text."}), 400
+    body = raw_body.strip()
     if not body:
         return jsonify({"ok": False, "error": "Comment cannot be empty."}), 400
     if len(body) > MAX_COMMENT_LENGTH:

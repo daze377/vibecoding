@@ -57,3 +57,50 @@ def test_logout_ends_session(client, auth):
     response = client.get("/")
     assert b"Log in" in response.data
     assert b"Log out" not in response.data
+
+
+def test_login_follows_safe_next(client, auth):
+    auth.signup()
+    page = client.get("/login?next=/new")
+    assert b"/login?next=" in page.data  # the form keeps the target
+    response = client.post(
+        "/login?next=/new",
+        data={"username": "alice", "password": "password123"},
+    )
+    assert response.headers["Location"] == "/new"
+
+
+def test_login_ignores_offsite_next(client, auth):
+    auth.signup()
+    for evil in ("//evil.com", "/\\evil.com", "https://evil.com"):
+        response = client.post(
+            "/login",
+            query_string={"next": evil},
+            data={"username": "alice", "password": "password123"},
+        )
+        assert response.headers["Location"] == "/"
+        auth.logout()
+
+
+def test_username_uniqueness_ignores_case(auth):
+    auth.signup(username="Alice")
+    response = auth.signup(username="alice", email="other@example.com")
+    assert response.status_code == 400
+    assert b"already" in response.data
+
+
+def test_login_accepts_any_username_case(auth):
+    auth.signup(username="Alice")
+    assert auth.login(username="alice").status_code == 302
+
+
+def test_signup_race_falls_back_to_db_constraint(auth, monkeypatch):
+    """Two signups racing past the friendly checks must still get a clean 400."""
+    import models
+
+    auth.signup()
+    monkeypatch.setattr(models, "get_user_by_username", lambda u: None)
+    monkeypatch.setattr(models, "get_user_by_email", lambda e: None)
+    response = auth.signup()
+    assert response.status_code == 400
+    assert b"already" in response.data
