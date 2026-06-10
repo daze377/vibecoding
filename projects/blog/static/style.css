@@ -49,6 +49,9 @@ a:hover { text-decoration: underline; }
 
 .nav-user { color: var(--muted); }
 
+.search-form { flex: 1 1 8rem; max-width: 14rem; }
+.search-form input { padding: 0.35rem 0.6rem; }
+
 .container { max-width: 720px; margin: 0 auto; padding: 1rem 1rem 3rem; }
 
 /* --- flash messages --------------------------------------------------- */

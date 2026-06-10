@@ -11,6 +11,10 @@
   <header class="site-header">
     <nav class="nav">
       <a class="brand" href="{{ url_for('posts.index') }}">My Blog</a>
+      <form class="search-form" action="{{ url_for('search.results') }}" method="get" role="search">
+        <input type="search" name="q" placeholder="Search posts…" maxlength="100"
+               value="{{ request.args.get('q', '') }}" aria-label="Search posts">
+      </form>
       <div class="nav-links">
         {% if g.user %}
           <a href="{{ url_for('posts.new') }}">New post</a>

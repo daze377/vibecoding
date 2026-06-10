@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block content %}
+  {% if not query %}
+    <h1>Search</h1>
+    <p class="empty">Type something in the search box to find posts.</p>
+  {% else %}
+    <h1>Results for “{{ query }}”</h1>
+    {% if posts %}
+      {% include "_post_list.html" %}
+    {% else %}
+      <p class="empty">No posts match “{{ query }}”.</p>
+    {% endif %}
+  {% endif %}
+{% endblock %}

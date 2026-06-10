@@ -100,6 +100,24 @@ def delete_post(post_id):
     db.commit()
 
 
+# --- search ------------------------------------------------------------------
+
+def search_posts(query):
+    """Return posts whose title or body contains the words, newest first."""
+    escaped = (
+        query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    )
+    pattern = f"%{escaped}%"
+    rows = get_db().execute(
+        f"SELECT {POST_COLUMNS}"
+        "  FROM posts AS p JOIN users AS u ON u.id = p.author_id"
+        " WHERE p.title LIKE ? ESCAPE '\\' OR p.body LIKE ? ESCAPE '\\'"
+        " ORDER BY p.created_at DESC, p.id DESC",
+        (pattern, pattern),
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+
 # --- comments ----------------------------------------------------------------
 
 def add_comment(post_id, user_id, body):
