@@ -98,3 +98,39 @@ def delete_post(post_id):
     db = get_db()
     db.execute("DELETE FROM posts WHERE id = ?", (post_id,))
     db.commit()
+
+
+# --- comments ----------------------------------------------------------------
+
+def add_comment(post_id, user_id, body):
+    """Insert a comment and return it (with the author's username)."""
+    db = get_db()
+    cursor = db.execute(
+        "INSERT INTO comments (post_id, user_id, body) VALUES (?, ?, ?)",
+        (post_id, user_id, body),
+    )
+    db.commit()
+    return get_comment(cursor.lastrowid)
+
+
+def get_comment(comment_id):
+    """Return one comment as a dict, or None."""
+    row = get_db().execute(
+        "SELECT c.id, c.post_id, c.body, c.created_at, u.username AS author"
+        "  FROM comments AS c JOIN users AS u ON u.id = c.user_id"
+        " WHERE c.id = ?",
+        (comment_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def list_comments(post_id):
+    """Return a post's comments, oldest first, with author usernames."""
+    rows = get_db().execute(
+        "SELECT c.id, c.body, c.created_at, u.username AS author"
+        "  FROM comments AS c JOIN users AS u ON u.id = c.user_id"
+        " WHERE c.post_id = ?"
+        " ORDER BY c.created_at ASC, c.id ASC",
+        (post_id,),
+    ).fetchall()
+    return [dict(row) for row in rows]

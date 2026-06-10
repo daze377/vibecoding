@@ -20,4 +20,32 @@
       </div>
     {% endif %}
   </article>
+
+  <section class="comments">
+    <h2>Comments ({{ comments | length }})</h2>
+    {% for comment in comments %}
+      <div class="comment">
+        <p class="comment-meta">{{ comment.author }} · {{ comment.created_at | day }}</p>
+        <p class="comment-text">{{ comment.body }}</p>
+      </div>
+    {% else %}
+      <p class="empty">No comments yet.</p>
+    {% endfor %}
+
+    {% if g.user %}
+      <form id="comment-form" class="form"
+            data-url="{{ url_for('comments.add', post_id=post.id) }}">
+        <label for="comment-body">Add a comment</label>
+        <textarea id="comment-body" rows="3" required maxlength="2000"></textarea>
+        <p id="comment-error" class="form-error" hidden></p>
+        <button type="submit">Comment</button>
+      </form>
+    {% else %}
+      <p><a href="{{ url_for('auth.login', next=request.path) }}">Log in</a> to comment.</p>
+    {% endif %}
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='post.js') }}" defer></script>
 {% endblock %}

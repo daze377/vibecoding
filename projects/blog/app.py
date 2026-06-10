@@ -5,6 +5,7 @@ from flask import Flask
 
 import db
 from auth import bp as auth_bp
+from comments import bp as comments_bp
 from csrf import init_csrf
 from posts import bp as posts_bp
 
@@ -29,6 +30,7 @@ def create_app(test_config=None):
     init_csrf(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(posts_bp)
+    app.register_blueprint(comments_bp)
 
     @app.template_filter("day")
     def day_filter(timestamp):

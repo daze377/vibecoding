@@ -18,9 +18,13 @@ def index():
 
 @bp.get("/post/<int:post_id>")
 def detail(post_id):
-    """One full post."""
+    """One full post with its comments."""
     post = _get_post_or_abort(post_id)
-    return render_template("post.html", post=post)
+    return render_template(
+        "post.html",
+        post=post,
+        comments=models.list_comments(post_id),
+    )
 
 
 @bp.route("/new", methods=("GET", "POST"))
