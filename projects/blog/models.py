@@ -11,6 +11,43 @@ POST_COLUMNS = (
 )
 
 
+# --- users -----------------------------------------------------------------
+
+def create_user(username, email, password_hash):
+    """Insert a new user and return their id."""
+    db = get_db()
+    cursor = db.execute(
+        "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+        (username, email, password_hash),
+    )
+    db.commit()
+    return cursor.lastrowid
+
+
+def get_user_by_id(user_id):
+    """Return one user as a dict, or None."""
+    row = get_db().execute(
+        "SELECT * FROM users WHERE id = ?", (user_id,)
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def get_user_by_username(username):
+    """Return one user as a dict, or None."""
+    row = get_db().execute(
+        "SELECT * FROM users WHERE username = ?", (username,)
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def get_user_by_email(email):
+    """Return one user as a dict, or None."""
+    row = get_db().execute(
+        "SELECT * FROM users WHERE email = ?", (email,)
+    ).fetchone()
+    return dict(row) if row else None
+
+
 # --- posts -----------------------------------------------------------------
 
 def list_posts():

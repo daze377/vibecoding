@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% endblock %} · My Blog</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -11,6 +12,16 @@
     <nav class="nav">
       <a class="brand" href="{{ url_for('posts.index') }}">My Blog</a>
       <div class="nav-links">
+        {% if g.user %}
+          <span class="nav-user">{{ g.user.username }}</span>
+          <form method="post" action="{{ url_for('auth.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="button-link">Log out</button>
+          </form>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Log in</a>
+          <a href="{{ url_for('auth.signup') }}">Sign up</a>
+        {% endif %}
       </div>
     </nav>
   </header>
