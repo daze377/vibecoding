@@ -9,6 +9,17 @@
     </p>
     <div class="post-body">{{ post.body }}</div>
 
+    <div class="reactions" data-url="{{ url_for('reactions.react', post_id=post.id) }}">
+      <button type="button" data-react="like"
+              class="react{{ ' active' if my_reaction == 'like' }}">
+        👍 <span data-count="like">{{ counts.like }}</span>
+      </button>
+      <button type="button" data-react="dislike"
+              class="react{{ ' active' if my_reaction == 'dislike' }}">
+        👎 <span data-count="dislike">{{ counts.dislike }}</span>
+      </button>
+    </div>
+
     {% if g.user and g.user.id == post.author_id %}
       <div class="post-actions">
         <a class="button secondary" href="{{ url_for('posts.edit', post_id=post.id) }}">Edit</a>

@@ -8,6 +8,7 @@ from auth import bp as auth_bp
 from comments import bp as comments_bp
 from csrf import init_csrf
 from posts import bp as posts_bp
+from reactions import bp as reactions_bp
 
 
 def create_app(test_config=None):
@@ -31,6 +32,7 @@ def create_app(test_config=None):
     app.register_blueprint(auth_bp)
     app.register_blueprint(posts_bp)
     app.register_blueprint(comments_bp)
+    app.register_blueprint(reactions_bp)
 
     @app.template_filter("day")
     def day_filter(timestamp):

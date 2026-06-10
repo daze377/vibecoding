@@ -127,6 +127,20 @@ button.danger { background: var(--danger); }
 }
 .button-link:hover { text-decoration: underline; }
 
+/* --- reactions ----------------------------------------------------------- */
+.reactions { display: flex; gap: 0.5rem; margin: 1rem 0; }
+
+button.react {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+button.react.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, var(--bg));
+}
+
 /* --- comments ----------------------------------------------------------- */
 .comments { margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem; }
 

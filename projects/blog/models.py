@@ -134,3 +134,50 @@ def list_comments(post_id):
         (post_id,),
     ).fetchall()
     return [dict(row) for row in rows]
+
+
+# --- reactions ---------------------------------------------------------------
+
+def get_reaction(post_id, user_id):
+    """Return this user's reaction to a post: 'like', 'dislike', or None."""
+    row = get_db().execute(
+        "SELECT kind FROM reactions WHERE post_id = ? AND user_id = ?",
+        (post_id, user_id),
+    ).fetchone()
+    return row["kind"] if row else None
+
+
+def set_reaction(post_id, user_id, kind):
+    """Set a user's reaction (one per post).
+
+    Picking the same kind again removes it (a toggle). Returns the
+    resulting reaction: 'like', 'dislike', or None.
+    """
+    db = get_db()
+    if get_reaction(post_id, user_id) == kind:
+        db.execute(
+            "DELETE FROM reactions WHERE post_id = ? AND user_id = ?",
+            (post_id, user_id),
+        )
+        db.commit()
+        return None
+    db.execute(
+        "INSERT INTO reactions (post_id, user_id, kind) VALUES (?, ?, ?)"
+        " ON CONFLICT (post_id, user_id) DO UPDATE SET kind = excluded.kind",
+        (post_id, user_id, kind),
+    )
+    db.commit()
+    return kind
+
+
+def count_reactions(post_id):
+    """Return {'like': n, 'dislike': n} for a post."""
+    rows = get_db().execute(
+        "SELECT kind, COUNT(*) AS total FROM reactions"
+        " WHERE post_id = ? GROUP BY kind",
+        (post_id,),
+    ).fetchall()
+    counts = {"like": 0, "dislike": 0}
+    for row in rows:
+        counts[row["kind"]] = row["total"]
+    return counts

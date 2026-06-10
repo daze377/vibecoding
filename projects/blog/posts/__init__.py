@@ -18,12 +18,17 @@ def index():
 
 @bp.get("/post/<int:post_id>")
 def detail(post_id):
-    """One full post with its comments."""
+    """One full post with its comments and reaction counts."""
     post = _get_post_or_abort(post_id)
+    my_reaction = (
+        models.get_reaction(post_id, g.user["id"]) if g.user else None
+    )
     return render_template(
         "post.html",
         post=post,
         comments=models.list_comments(post_id),
+        counts=models.count_reactions(post_id),
+        my_reaction=my_reaction,
     )
 
 
