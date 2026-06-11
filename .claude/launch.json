@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "blog",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd \"$HOME/.cache/vibecoding-blog-preview\" && exec .venv/bin/python3 -m flask --app app run --port \"${PORT:-5001}\""],
+      "port": 5001,
+      "autoPort": true
+    }
+  ]
+}
