@@ -30,7 +30,7 @@ npm run dev    # → http://localhost:8787
 
 ## Deploy
 
-See the project skill: `.claude/skills/deploy-blog-workers/SKILL.md`
+See the repo skill: [`skills/deploy-cloudflare-workers/SKILL.md`](../../skills/deploy-cloudflare-workers/SKILL.md)
 (login → `d1 create` → schema → `wrangler deploy` → `secret put SECRET_KEY`).
 Day-to-day it's just:
 
