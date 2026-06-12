@@ -17,6 +17,7 @@ class PageView(QScrollArea):
 
     selection_made = Signal(tuple)          # (x0, y0, x1, y1)
     word_double_clicked = Signal(tuple, str)
+    word_missed = Signal()                  # double-click found no text
     note_point_chosen = Signal(tuple)       # (x, y)
 
     def __init__(self):
@@ -27,7 +28,9 @@ class PageView(QScrollArea):
         self.hits = []                      # rects to outline on this page
         self._drag_start = None
         self._drag_rect = None
-        self.label = QLabel("Open a PDF to get started  (Ctrl+O)")
+        self.label = QLabel("Open a PDF to get started  (Ctrl+O)\n\n"
+                            "Double-click a word to edit it  ·  drag to select,"
+                            " then 🖍 highlight or ✏ replace  ·  right-click adds a note")
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setMouseTracking(True)
         self.label.installEventFilter(self)
@@ -121,6 +124,8 @@ class PageView(QScrollArea):
                 rect, word = found
                 self.word_double_clicked.emit(
                     (rect.x0, rect.y0, rect.x1, rect.y1), word)
+            else:
+                self.word_missed.emit()
         elif kind == event.Type.ContextMenu:
             point = self._to_pdf(QPoint(event.pos()))
             if point:

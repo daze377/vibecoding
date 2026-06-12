@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.page_view)
         self.page_view.selection_made.connect(self.on_selection)
         self.page_view.word_double_clicked.connect(self.on_edit_word)
+        self.page_view.word_missed.connect(self.on_word_missed)
         self.page_view.note_point_chosen.connect(self.on_add_note)
 
         self.thumbnails = QListWidget()
@@ -80,6 +81,10 @@ class MainWindow(QMainWindow):
         self.highlight_action = self._action("🖍 Highlight", self.on_highlight, "Ctrl+H")
         self.highlight_action.setEnabled(False)
         bar.addAction(self.highlight_action)
+        self.edit_action = self._action("✏ Edit text", self.on_edit_selection, "Ctrl+E")
+        self.edit_action.setEnabled(False)
+        self.edit_action.setToolTip("Replace the selected text (or double-click a word)")
+        bar.addAction(self.edit_action)
         bar.addAction(self._action("🔍 Find", self.toggle_search, "Ctrl+F"))
 
     def _build_search_bar(self):
@@ -107,6 +112,9 @@ class MainWindow(QMainWindow):
         self.search_bar.set_document(self.doc)
         self._fill_thumbnails()
         self._refresh_status()
+        self.status.showMessage(
+            "Double-click a word to edit it  ·  drag to select, then 🖍 highlight"
+            " or ✏ replace  ·  right-click adds a note", 10000)
 
     def save(self):
         if self.doc:
@@ -157,15 +165,35 @@ class MainWindow(QMainWindow):
         self.selection = rect
         self.highlight_action.setEnabled(True)
         selected = self.doc.text_in_rect(self.page_view.current_index, rect)
-        self.status.showMessage(f'Selected: "{selected[:60]}"' if selected else "")
+        self.edit_action.setEnabled(bool(selected))
+        self.status.showMessage(
+            f'Selected: "{selected[:60]}" — 🖍 to highlight, ✏ to replace'
+            if selected else "Selection has no text — 🖍 still highlights the area")
 
     def on_highlight(self):
         if self.doc and self.selection:
             self.doc.add_highlight(self.page_view.current_index, [self.selection])
-            self.selection = None
-            self.highlight_action.setEnabled(False)
-            self.page_view.clear_selection()
+            self._clear_selection()
             self._refresh_status()
+
+    def on_edit_selection(self):
+        if not (self.doc and self.selection):
+            return
+        page = self.page_view.current_index
+        old_text = self.doc.text_in_rect(page, self.selection)
+        new_text, ok = QInputDialog.getText(
+            self, "Edit text", "Replace selection with:", text=old_text)
+        if ok and new_text != old_text:
+            self.doc.replace_text(page, self.selection, new_text)
+            self._clear_selection()
+            self.page_view.refresh()
+            self._refresh_status()
+
+    def _clear_selection(self):
+        self.selection = None
+        self.highlight_action.setEnabled(False)
+        self.edit_action.setEnabled(False)
+        self.page_view.clear_selection()
 
     def on_edit_word(self, rect, word):
         new_text, ok = QInputDialog.getText(
@@ -174,6 +202,10 @@ class MainWindow(QMainWindow):
             self.doc.replace_text(self.page_view.current_index, rect, new_text)
             self.page_view.refresh()
             self._refresh_status()
+
+    def on_word_missed(self):
+        self.status.showMessage(
+            "No editable text under the cursor — scanned pages have none", 5000)
 
     def on_add_note(self, point):
         text, ok = QInputDialog.getMultiLineText(self, "Add note", "Note:")

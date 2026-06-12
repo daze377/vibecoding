@@ -41,6 +41,7 @@ def main(out_dir):
     app.processEvents()
     window.grab().save(os.path.join(out_dir, "pagemark-search.png"))
 
+    window.doc.close()
     os.remove(sample)
     print(f"saved 2 screenshots to {out_dir}")
 

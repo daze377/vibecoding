@@ -40,6 +40,10 @@ class PdfDocument:
         self.path = path
         self._dirty = False
 
+    def close(self):
+        """Release the underlying file (Windows locks it while open)."""
+        self._doc.close()
+
     def save(self):
         """Overwrite the original file safely (write a sibling, then swap)."""
         data = self._doc.tobytes()
