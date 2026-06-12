@@ -214,12 +214,15 @@ func _handle_cli_flags(args: PackedStringArray) -> void:
 			await get_tree().create_timer(1.0).timeout
 			# stage the frame: two bots strolling in front of the camera
 			var hero := players.get_node_or_null("Player_1")
+			if hero:               # look down over the shoulder, not into the helmet
+				hero._spring.rotation.x = -0.4
+				hero._spring.spring_length = 4.0
 			for index in 2:
 				var bot := players.get_node_or_null("Bot_%d" % index)
 				if hero and bot:
 					bot.global_position = (hero.global_position
-						+ hero.global_transform.basis.z * -(7.0 + index * 4)
-						+ Vector3(index * 3 - 1.5, 0, 0))
+						+ hero.global_transform.basis.z * -(12.0 + index * 5)
+						+ Vector3(index * 4 - 2.0, 0, 0))
 			await get_tree().create_timer(2.0).timeout
 			var image := get_viewport().get_texture().get_image()
 			image.save_png(arg.trim_prefix("--shot="))
