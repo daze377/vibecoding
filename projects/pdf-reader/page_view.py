@@ -70,9 +70,13 @@ class PageView(QScrollArea):
         for rect in self.hits:
             painter.fillRect(self._to_widget(rect), HIT_FILL)
         if self._drag_rect:
-            painter.fillRect(self._drag_rect, SELECT_FILL)
+            # the drag rect is in label coords; the pixmap sits centered
+            # inside the label, so shift by that offset before painting
+            dx, dy = self._pixmap_offset(pixmap.size())
+            shown = self._drag_rect.translated(-dx, -dy)
+            painter.fillRect(shown, SELECT_FILL)
             painter.setPen(SELECT_EDGE)
-            painter.drawRect(self._drag_rect)
+            painter.drawRect(shown)
         painter.end()
 
         self.label.setPixmap(pixmap)
@@ -86,13 +90,18 @@ class PageView(QScrollArea):
                      int((pdf_rect[2] - pdf_rect[0]) * z),
                      int((pdf_rect[3] - pdf_rect[1]) * z))
 
+    def _pixmap_offset(self, pixmap_size):
+        """Top-left of the centered pixmap, in label coordinates."""
+        dx = max(0, (self.label.width() - pixmap_size.width()) // 2)
+        dy = max(0, (self.label.height() - pixmap_size.height()) // 2)
+        return dx, dy
+
     def _to_pdf(self, pos):
         # the pixmap is centered inside the label — remove that offset first
         pixmap = self.label.pixmap()
         if pixmap is None:
             return None
-        dx = max(0, (self.label.width() - pixmap.width()) // 2)
-        dy = max(0, (self.label.height() - pixmap.height()) // 2)
+        dx, dy = self._pixmap_offset(pixmap.size())
         return ((pos.x() - dx) / self.zoom, (pos.y() - dy) / self.zoom)
 
     # --- mouse handling -------------------------------------------------------
