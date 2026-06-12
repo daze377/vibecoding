@@ -26,8 +26,9 @@ func _ready() -> void:
 	add_child(load("res://scenes/hud.tscn").instantiate())
 
 	var args := OS.get_cmdline_user_args()
-	if "--smoke" in args or "--botmatch" in args:
-		Net.bot_count = maxi(Net.bot_count, 5)
+	for arg in args:
+		if arg == "--smoke" or arg == "--botmatch" or arg.begins_with("--shot"):
+			Net.bot_count = maxi(Net.bot_count, 5)
 
 	if multiplayer.is_server():
 		_spawn_player(1)
@@ -210,7 +211,16 @@ func _handle_cli_flags(args: PackedStringArray) -> void:
 		get_tree().quit(0 if match_over and survivors <= 1 else 1)
 	for arg in args:
 		if arg.begins_with("--shot="):
-			await get_tree().create_timer(3.0).timeout
+			await get_tree().create_timer(1.0).timeout
+			# stage the frame: two bots strolling in front of the camera
+			var hero := players.get_node_or_null("Player_1")
+			for index in 2:
+				var bot := players.get_node_or_null("Bot_%d" % index)
+				if hero and bot:
+					bot.global_position = (hero.global_position
+						+ hero.global_transform.basis.z * -(7.0 + index * 4)
+						+ Vector3(index * 3 - 1.5, 0, 0))
+			await get_tree().create_timer(2.0).timeout
 			var image := get_viewport().get_texture().get_image()
 			image.save_png(arg.trim_prefix("--shot="))
 			print("SCREENSHOT saved")
