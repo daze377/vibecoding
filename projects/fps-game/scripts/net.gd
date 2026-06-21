@@ -56,6 +56,7 @@ func _setup_input_actions() -> void:
 	_key_action("sprint", KEY_SHIFT)
 	_key_action("reload", KEY_R)
 	_key_action("toggle_mouse", KEY_ESCAPE)
+	_key_action("toggle_camera", KEY_V)
 	var shoot := InputEventMouseButton.new()
 	shoot.button_index = MOUSE_BUTTON_LEFT
 	_event_action("shoot", shoot)

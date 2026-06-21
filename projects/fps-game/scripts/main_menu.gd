@@ -59,7 +59,7 @@ func _ready() -> void:
 	panel.add_child(_button("Quit", func(): get_tree().quit()))
 
 	var controls := Label.new()
-	controls.text = "WASD move · mouse aim · LMB shoot · R reload · Shift sprint · Space jump"
+	controls.text = "WASD move · mouse aim · LMB shoot · R reload · V camera · Shift sprint · Space jump"
 	controls.add_theme_font_size_override("font_size", 14)
 	controls.add_theme_color_override("font_color", Color(1, 1, 1, 0.45))
 	controls.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

@@ -214,8 +214,9 @@ func _handle_cli_flags(args: PackedStringArray) -> void:
 			await get_tree().create_timer(1.0).timeout
 			# stage the frame: two bots strolling in front of the camera
 			var hero := players.get_node_or_null("Player_1")
-			if hero:               # look down over the shoulder, not into the helmet
-				hero._spring.rotation.x = -0.4
+			if hero:
+				hero._set_camera_mode(hero.CameraMode.THIRD_PERSON)
+				hero._head.rotation.x = -0.4
 				hero._spring.spring_length = 4.0
 			for index in 2:
 				var bot := players.get_node_or_null("Bot_%d" % index)
