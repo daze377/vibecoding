@@ -22,10 +22,11 @@ func _ready() -> void:
 
 func _build_camera_rig() -> void:
 	_spring = SpringArm3D.new()
-	_spring.position = Vector3(0.45, 1.6, 0)   # over-the-shoulder
-	_spring.spring_length = 2.6
+	_spring.position = Vector3(0.65, 2.05, 0.15)   # above head, clear right shoulder
+	_spring.spring_length = 3.2
 	_spring.collision_mask = 1
 	add_child(_spring)
+	_spring.rotation.x = -0.12                      # look slightly down over the shoulder
 	_camera = Camera3D.new()
 	_camera.current = true
 	_spring.add_child(_camera)
