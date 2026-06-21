@@ -14,7 +14,7 @@ var _alive: Label
 var _zone: Label
 var _message: Label
 var _hit_marker: Label
-var _crosshair: Control
+var _reticle: Control
 var _overlay: ColorRect
 
 func _ready() -> void:
@@ -41,12 +41,12 @@ func _ready() -> void:
 	_hit_marker.offset_top = -64
 	_hit_marker.offset_bottom = -24
 	_hit_marker.modulate.a = 0.0
-	_crosshair()
+	_build_crosshair()
 
 func _process(_delta: float) -> void:
 	_hit_marker.modulate.a = maxf(_hit_marker.modulate.a - _delta * 3.0, 0.0)
-	if _crosshair:
-		_crosshair.visible = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
+	if _reticle:
+		_reticle.visible = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 	var zone := get_node_or_null("/root/Game/Zone")
 	if zone:
 		var seconds: int = zone.seconds_to_next_phase()
@@ -158,12 +158,12 @@ func _label(preset: int, text: String, size: int, alignment: int,
 			label.offset_right = 400
 	return label
 
-func _crosshair() -> void:
-	_crosshair = Control.new()
-	_crosshair.set_anchors_preset(Control.PRESET_CENTER)
-	_crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_crosshair.draw.connect(_draw_crosshair)
-	add_child(_crosshair)
+func _build_crosshair() -> void:
+	_reticle = Control.new()
+	_reticle.set_anchors_preset(Control.PRESET_CENTER)
+	_reticle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_reticle.draw.connect(_draw_crosshair)
+	add_child(_reticle)
 
 func _draw_crosshair() -> void:
 	const GAP := 5.0
@@ -173,14 +173,14 @@ func _draw_crosshair() -> void:
 	var center := Vector2.ZERO
 	for width in [3.0, 1.5]:
 		var color := OUTLINE if width == 3.0 else WHITE
-		_crosshair.draw_line(center + Vector2(-GAP - ARM, 0),
+		_reticle.draw_line(center + Vector2(-GAP - ARM, 0),
 			center + Vector2(-GAP, 0), color, width, true)
-		_crosshair.draw_line(center + Vector2(GAP, 0),
+		_reticle.draw_line(center + Vector2(GAP, 0),
 			center + Vector2(GAP + ARM, 0), color, width, true)
-		_crosshair.draw_line(center + Vector2(0, -GAP - ARM),
+		_reticle.draw_line(center + Vector2(0, -GAP - ARM),
 			center + Vector2(0, -GAP), color, width, true)
-		_crosshair.draw_line(center + Vector2(0, GAP),
+		_reticle.draw_line(center + Vector2(0, GAP),
 			center + Vector2(0, GAP + ARM), color, width, true)
 	# tiny center dot so aim point is obvious
-	_crosshair.draw_circle(center, 2.0, OUTLINE)
-	_crosshair.draw_circle(center, 1.0, WHITE)
+	_reticle.draw_circle(center, 2.0, OUTLINE)
+	_reticle.draw_circle(center, 1.0, WHITE)
