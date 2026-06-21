@@ -14,6 +14,7 @@ var _alive: Label
 var _zone: Label
 var _message: Label
 var _hit_marker: Label
+var _crosshair: Control
 var _overlay: ColorRect
 
 func _ready() -> void:
@@ -44,6 +45,8 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_hit_marker.modulate.a = maxf(_hit_marker.modulate.a - _delta * 3.0, 0.0)
+	if _crosshair:
+		_crosshair.visible = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 	var zone := get_node_or_null("/root/Game/Zone")
 	if zone:
 		var seconds: int = zone.seconds_to_next_phase()
@@ -156,15 +159,28 @@ func _label(preset: int, text: String, size: int, alignment: int,
 	return label
 
 func _crosshair() -> void:
-	for delta in [Vector2(-9, 0), Vector2(9, 0), Vector2(0, -9), Vector2(0, 9)]:
-		var dot := ColorRect.new()
-		dot.color = Color(1, 1, 1, 0.9)
-		dot.anchor_left = 0.5
-		dot.anchor_right = 0.5
-		dot.anchor_top = 0.5
-		dot.anchor_bottom = 0.5
-		dot.offset_left = delta.x - 2
-		dot.offset_top = delta.y - 2
-		dot.offset_right = delta.x + 2
-		dot.offset_bottom = delta.y + 2
-		add_child(dot)
+	_crosshair = Control.new()
+	_crosshair.set_anchors_preset(Control.PRESET_CENTER)
+	_crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_crosshair.draw.connect(_draw_crosshair)
+	add_child(_crosshair)
+
+func _draw_crosshair() -> void:
+	const GAP := 5.0
+	const ARM := 10.0
+	const WHITE := Color(1, 1, 1, 0.95)
+	const OUTLINE := Color(0, 0, 0, 0.85)
+	var center := Vector2.ZERO
+	for width in [3.0, 1.5]:
+		var color := OUTLINE if width == 3.0 else WHITE
+		_crosshair.draw_line(center + Vector2(-GAP - ARM, 0),
+			center + Vector2(-GAP, 0), color, width, true)
+		_crosshair.draw_line(center + Vector2(GAP, 0),
+			center + Vector2(GAP + ARM, 0), color, width, true)
+		_crosshair.draw_line(center + Vector2(0, -GAP - ARM),
+			center + Vector2(0, -GAP), color, width, true)
+		_crosshair.draw_line(center + Vector2(0, GAP),
+			center + Vector2(0, GAP + ARM), color, width, true)
+	# tiny center dot so aim point is obvious
+	_crosshair.draw_circle(center, 2.0, OUTLINE)
+	_crosshair.draw_circle(center, 1.0, WHITE)
