@@ -1,0 +1,15 @@
+[remap]
+
+importer="gaussian.splat.importer"
+importer_version=5
+type="Resource"
+uid="uid://gn1oelm8gwb"
+path="res://.godot/imported/demo.compressed.ply-09eea8b1ef05e83584842ac1262220a0.res"
+
+[deps]
+
+source_file="res://assets/splats/demo.compressed.ply"
+dest_files=["res://.godot/imported/demo.compressed.ply-09eea8b1ef05e83584842ac1262220a0.res"]
+
+[params]
+

@@ -98,9 +98,18 @@ func request_hit(target_path: NodePath, damage: int) -> void:
 	apply_hit(target_path, mini(damage, Weapon.DAMAGE))
 
 func apply_hit(target_path: NodePath, damage: int) -> void:
-	var target := get_node_or_null(target_path)
-	if target is BaseCharacter and not target.is_dead():
+	var target := _find_character(get_node_or_null(target_path))
+	if target and not target.is_dead():
 		target.health.apply_damage(damage)
+
+func _find_character(node: Node) -> BaseCharacter:
+	# The path may point at a child mesh/collision; walk up to the owning body.
+	var current := node
+	while current:
+		if current is BaseCharacter:
+			return current
+		current = current.get_parent()
+	return null
 
 # --- win condition ------------------------------------------------------------------
 

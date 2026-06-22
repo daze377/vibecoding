@@ -7,9 +7,11 @@ enum CameraMode { FIRST_PERSON, THIRD_PERSON }
 const MOUSE_SENS := 0.0025
 const LOCAL_BODY_VIS_LAYER := 5
 const EYE_HEIGHT := 1.65
-const THIRD_PIVOT_HEIGHT := 1.55
+const THIRD_PIVOT_HEIGHT := 2.6       # well above the head
 const THIRD_SIDE_ANGLE := PI / 4.0          # 45° off the right shoulder
 const THIRD_SPRING_LENGTH := 4.5
+const THIRD_PITCH := -0.28                  # ~-16°: looks down past the head
+const THIRD_SIDE_OFFSET := 0.95             # shifts the rig right so the body sits left of the crosshair
 
 var weapon := Weapon.new()
 var _head: Node3D
@@ -57,6 +59,9 @@ func _build_camera_rig() -> void:
 	_ray = RayCast3D.new()
 	_ray.target_position = Vector3(0, 0, -100)
 	_ray.collision_mask = 0b11                 # world + characters
+	# The camera sits behind the local body, so the aim ray would pass through
+	# ourselves at close range — exclude our own body from the ray.
+	_ray.add_exception(self)
 	_camera.add_child(_ray)
 
 func _set_camera_mode(mode: CameraMode) -> void:
@@ -64,14 +69,16 @@ func _set_camera_mode(mode: CameraMode) -> void:
 	match mode:
 		CameraMode.FIRST_PERSON:
 			_head.position.y = EYE_HEIGHT
+			_head.position.x = 0.0
 			_spring_side.rotation.y = 0.0
 			_spring.spring_length = 0.0
 			_set_local_body_visible(false)
 		CameraMode.THIRD_PERSON:
 			_head.position.y = THIRD_PIVOT_HEIGHT
+			_head.position.x = THIRD_SIDE_OFFSET
 			_spring_side.rotation.y = THIRD_SIDE_ANGLE
 			_spring.spring_length = THIRD_SPRING_LENGTH
-			_head.rotation.x = clampf(_head.rotation.x, -0.8, 0.45)
+			_head.rotation.x = THIRD_PITCH
 			_set_local_body_visible(true)
 
 func _set_local_body_visible(visible: bool) -> void:
@@ -132,13 +139,25 @@ func _try_shoot() -> void:
 		return
 	flash_muzzle()
 	_ray.force_raycast_update()
-	if _ray.is_colliding():
-		var target := _ray.get_collider()
-		if target is BaseCharacter and not target.is_dead():
-			# Ask the referee (host). rpc_id(1, …) runs locally when we ARE the host.
-			get_node("/root/Game").request_hit.rpc_id(
-				1, target.get_path(), Weapon.DAMAGE)
-			get_tree().call_group("hud", "show_hit_marker")
+	var target := _find_character(_ray.get_collider())
+	if target and not target.is_dead():
+		# Never let the aim ray (which passes through our own body at close
+		# range) hurt the local player.
+		if target == self:
+			return
+		# Ask the referee (host). rpc_id(1, …) runs locally when we ARE the host.
+		get_node("/root/Game").request_hit.rpc_id(
+			1, target.get_path(), Weapon.DAMAGE)
+		get_tree().call_group("hud", "show_hit_marker")
+
+func _find_character(node: Node) -> BaseCharacter:
+	# A ray may hit an inner mesh/collision child; walk up to the owning body.
+	var current := node
+	while current:
+		if current is BaseCharacter:
+			return current
+		current = current.get_parent()
+	return null
 
 func _on_local_death() -> void:
 	# Spectate: detach the camera high above the arena.

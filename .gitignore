@@ -7,3 +7,14 @@
 # Local-only course materials (raw working files & student PII — never publish)
 raw/
 students/
+
+# Godot build artifacts (exported binaries/packs — too large and reproducible)
+export/
+*.exe
+*.pck
+
+# Godot editor cache
+.godot/
+
+# Windows reserved-name stray file
+nul

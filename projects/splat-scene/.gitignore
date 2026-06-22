@@ -1,0 +1,23 @@
+# Godot import cache
+.godot/
+
+# Tools (downloaded engine binaries, large)
+tools/
+
+# Source video (large, kept out of git)
+assets/source_video/*
+
+!assets/source_video/.gitkeep
+
+# Raw splats can be large; keep the working one, ignore bulky raw exports
+assets/splats/*.raw.ply
+assets/splats/*.spz
+
+# Build artifacts
+export/
+*.exe
+*.pck
+
+# Temp
+*.tmp
+docs/*.tmp.png

@@ -1,0 +1,31 @@
+; Splat Scene — a real-world environment rendered via 3D Gaussian Splatting,
+; with a light FPS shooter on top.
+; Engine configuration file.
+
+config_version=5
+
+[application]
+
+config/name="Splat Scene"
+run/main_scene="res://scenes/main_menu.tscn"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/description="Walk and shoot inside a real captured 3D Gaussian Splat environment."
+
+[autoload]
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[editor]
+
+[editor_plugins]
+
+enabled=PackedStringArray("gdgs")
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
