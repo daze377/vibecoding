@@ -8,11 +8,6 @@
 raw/
 students/
 
-# Godot build artifacts (exported binaries/packs — too large and reproducible)
-export/
-*.exe
-*.pck
-
 # Godot editor cache
 .godot/
 
