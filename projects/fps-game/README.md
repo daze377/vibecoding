@@ -33,6 +33,11 @@ godot --headless --path . res://scenes/game.tscn -- --botmatch   # full bot matc
 Project → Export → add the **Windows Desktop** preset → `Last-Circle.exe`
 (install export templates once via the editor when prompted).
 
+## 3D model resources
+
+Sketchfab is a useful site for finding downloadable 3D models:
+<https://sketchfab.com/>
+
 ## Design
 
 See [task-23.md](task-23.md) — the PUBG-vs-slice feature map, the
