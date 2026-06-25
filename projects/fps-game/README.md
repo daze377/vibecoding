@@ -6,6 +6,8 @@ shrinking zone, host/join multiplayer, and a last-one-standing win.
 
 ## Play it
 
+Published game page: <https://daze-game.itch.io/lastcircle>
+
 Open the folder in **Godot 4.5+** (verified on 4.6.3) and press ▶ — or from a terminal:
 
 ```bash
