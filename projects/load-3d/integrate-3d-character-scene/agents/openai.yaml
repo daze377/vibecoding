@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integrate 3D Character Scene"
+  short_description: "Combine imported 3D characters with game scenes"
+  default_prompt: "Use $integrate-3d-character-scene to integrate an imported player character with a 3D game map."

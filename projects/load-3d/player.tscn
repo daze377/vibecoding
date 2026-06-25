@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://b1c001p1ayer0"]
+
+[ext_resource type="Script" path="res://player.gd" id="1_player_script"]
+[ext_resource type="PackedScene" uid="uid://bu0gjo73s2lol" path="res://assets/cool-man/cool_man.glb" id="2_cool_man"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.065
+height = 0.32
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_wallcast"]
+radius = 0.055
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_player_script")
+
+[node name="Model" type="Node3D" parent="."]
+transform = Transform3D(-0.15, 0, -1.31134e-08, 0, 0.15, 0, 1.31134e-08, 0, -0.15, 0, -0.025, 0)
+
+[node name="CoolMan" parent="Model" instance=ExtResource("2_cool_man")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
+current = true
+fov = 65.0
+near = 0.05
+far = 800.0
+
+[node name="WallCast" type="RayCast3D" parent="CameraPivot"]
+target_position = Vector3(0, 0, 0.75)
+collision_mask = 1

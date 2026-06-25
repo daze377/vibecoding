@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" uid="uid://6tbsijrjqpkd" path="res://village.glb" id="1_village"]
+[ext_resource type="Script" path="res://main.gd" id="3_main"]
+[ext_resource type="PackedScene" uid="uid://b1c001p1ayer0" path="res://player.tscn" id="4_player"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.56, 0.7, 0.84, 1)
+sky_energy_multiplier = 1.0
+ambient_light_source = 2
+ambient_light_energy = 0.7
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="Main" type="Node3D"]
+script = ExtResource("3_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="VillageMap" parent="." instance=ExtResource("1_village")]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 0, 0, 0)
+light_energy = 2.5
+shadow_enabled = true
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
